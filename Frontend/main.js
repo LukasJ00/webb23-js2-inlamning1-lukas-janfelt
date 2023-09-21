@@ -8,7 +8,8 @@ const playerNameInput = document.getElementById("player-name");
 const rockButton = document.getElementById("rockBtn");
 const scissorsButton = document.getElementById("scissorsBtn");
 const paperButton = document.getElementById("paperBtn");
-const playerScoreDisplay = document.getElementById("player-score");
+const playerScoreDisplay = document.getElementById("playerScore");
+const computerWins= document.getElementById("computerWins");
 
 // namninput event
 playerNameInput.addEventListener("input", (event) => {
@@ -29,43 +30,7 @@ rockButton.addEventListener("click", (event) => {
     playGame("påse");
   });
 
-  function playGame(playerChoice) {
-    const choices = ["sten", "sax", "påse"];
-    const computerChoice = choices[Math.floor(Math.random() * choices.length)];
-
-    // visa spelarens och datorns val
-  document.getElementById("choices").innerText = `${playerName}: ${playerChoice} | Dator: ${computerChoice}`;
-
-  }
-
-   // uppdatera poängen baserat på vinnare
-   const winner = determineWinner(playerChoice, computerChoice);
-   if (winner === "player") {
-     playerScore++;
-   } else if (winner === "computer") {
-     computerScore restartGame();
-   }
-
-   // visa poängen
-  playerScoreDisplay.innerText = `Spelare: ${playerScore}`;
-
-
-  // om datorn vinner 
-
-  if  (computerScore === 1) {
-    showWinner("Dator");
-    setTimeout(() => {
-      restartGame();
-    }, 3000);  // 3 sek till omstart
-    return;
-  }
-
-  //visa att datorn vann
-  function showWinner(winnerName) {
-    winnerDisplay.innerText = `${winnerName} vann!`;
-  }
-
-  //regler
+   //regler
 function determineWinner(playerChoice, computerChoice) {
   if (
     (playerChoice === "sten" && computerChoice === "sax") ||
@@ -83,11 +48,42 @@ function determineWinner(playerChoice, computerChoice) {
     return "tie";
   }}
 
-  //starta om spelet
-function restartGame() {
-  playerScore = 0;
-  computerScore = 0;
-  winnerDisplay.innerText = "";
-  playerScoreDisplay.innerText = "Spelare: 0";
-  computerScoreDisplay.innerText = "Dator: 0";
-}
+  function playGame(playerChoice) {
+    const choices = ["sten", "sax", "påse"];
+    const computerChoice = choices[Math.floor(Math.random() * choices.length)];
+  
+    // visa spelarens och datorns val
+    document.getElementById("choices").innerText = `${playerName}: ${playerChoice} | Dator: ${computerChoice}`;
+  
+    // uppdatera poängen baserat på vinnare
+    const winner = determineWinner(playerChoice, computerChoice);
+    if (winner === "player") {
+      playerScore++;
+    } else if (winner === "computer") {
+      computerScore++;
+    }
+  
+    // visa poängen
+    playerScoreDisplay.innerText = `${playerName} poäng: ${playerScore}`;
+  
+    // kolla om datorn vann
+    if (computerScore >= 1) {
+      showWinner("Dator");
+      setTimeout(() => {
+        restartGame();
+      }, 3000);  // 3 sek till omstart
+      return
+    }}
+
+    //visa vinnaren
+    function showWinner(winnerName) {
+      computerWins.innerText = `${winnerName} vann :( försök igen`;
+    }
+
+    function restartGame() {
+      playerScore = 0;
+      computerScore = 0;
+      computerWins.innerText = ""; // Clear the "Datorn vann" message
+      playerScoreDisplay.innerText = `${playerName} poäng: ${playerScore}`;
+      document.getElementById("choices").innerText = "";
+    }
