@@ -71,9 +71,12 @@ function determineWinner(playerChoice, computerChoice) {
       showWinner("Dator");
       setTimeout(() => {
         restartGame();
-      }, 3000);  // 3 sek till omstart
+      } 
+      , 3000);  // 3 sek till omstart
       return
-    }}
+    }
+  
+  }
 
     //visa vinnaren
     function showWinner(winnerName) {
@@ -87,3 +90,5 @@ function determineWinner(playerChoice, computerChoice) {
       playerScoreDisplay.innerText = `${playerName} poäng: ${playerScore}`;
       document.getElementById("choices").innerText = "";
     }
+
+    
