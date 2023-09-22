@@ -80,8 +80,10 @@ function determineWinner(playerChoice, computerChoice) {
 
     //visa vinnaren
     function showWinner(winnerName) {
-      computerWins.innerText = `${winnerName} vann :( försök igen`;
+      computerWins.innerText = `${winnerName} vann 😢 försök igen`;
     }
+
+    
 
     function restartGame() {
       playerScore = 0;
