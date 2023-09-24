@@ -3,8 +3,8 @@ const app = express(); //Initiera servern
 
 app.use( express.json() );
 
-app.listen(3000, () => { //Lyssna på port 3000
-  console.log("Listening on port 3000 ...");
+app.listen(4000, () => { //Lyssna på port 3000
+  console.log("Listening on port 4000 ...");
 });
 
 
