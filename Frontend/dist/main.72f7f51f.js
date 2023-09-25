@@ -101,145 +101,110 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 })({6:[function(require,module,exports) {
 
 
-// Funktion för att posta highscore till servern
-var postHighscore = function () {
+// Funktion för att uppdatera highscore-listan
+var updateHighscore = function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(playerName, playerScore) {
     var url, response;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            url = "http://localhost:4000/highscore";
-            _context.next = 3;
+            url = 'http://localhost:4000/highscore';
+            _context.prev = 1;
+            _context.next = 4;
             return fetch(url, {
-              method: "POST",
+              method: 'POST',
               headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json'
               },
-              body: JSON.stringify({ playerName: playerName, score: playerScore }) // Skicka spelarens namn och poäng till servern
+              body: JSON.stringify({ playerRank: 0, playerName: playerName, playerScore: playerScore }) // Här lägger vi till playerRank med 0 som standardvärde
             });
 
-          case 3:
+          case 4:
             response = _context.sent;
 
 
             if (response.status === 200) {
-              console.log("Highscore uppdaterad");
+              console.log('Highscore uppdaterad');
+              // Ladda om highscore-listan efter att den har uppdaterats
+              loadHighscore();
             } else {
-              console.error("Något gick fel när highscore skulle uppdateras");
+              console.error('Något gick fel när highscore skulle uppdateras');
             }
+            _context.next = 11;
+            break;
 
-          case 5:
+          case 8:
+            _context.prev = 8;
+            _context.t0 = _context["catch"](1);
+
+            console.error('Något gick fel:', _context.t0);
+
+          case 11:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this);
+    }, _callee, this, [[1, 8]]);
   }));
 
-  return function postHighscore(_x, _x2) {
+  return function updateHighscore(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 }();
 
-// Funktion som anropas när spelet är över och resultatet ska sparas i highscore-listan
+// Funktion för att ladda in highscore-listan när sidan laddas
 
 
-var restartGame = function () {
+var loadHighscore = function () {
   var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+    var url, response, highscore;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.next = 2;
-            return postHighscore(playerName, playerScore);
+            url = 'http://localhost:4000/highscore';
+            _context2.prev = 1;
+            _context2.next = 4;
+            return fetch(url);
 
-          case 2:
-
-            playerScore = 0;
-            computerScore = 0;
-            computerWins.innerText = ""; // Rensa meddelandet "Datorn vann"
-            playerScoreDisplay.innerText = playerName + " po\xE4ng: " + playerScore;
-            document.getElementById("choices").innerText = "";
+          case 4:
+            response = _context2.sent;
+            _context2.next = 7;
+            return response.json();
 
           case 7:
+            highscore = _context2.sent;
+
+
+            displayHighscore(highscore);
+            _context2.next = 14;
+            break;
+
+          case 11:
+            _context2.prev = 11;
+            _context2.t0 = _context2["catch"](1);
+
+            console.error('Något gick fel:', _context2.t0);
+
+          case 14:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, this);
+    }, _callee2, this, [[1, 11]]);
   }));
 
-  return function restartGame() {
+  return function loadHighscore() {
     return _ref2.apply(this, arguments);
   };
 }();
-
-// Funktion för att hämta och visa highscore-listan
-
-
-var getHighscore = function () {
-  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-    var url, response, highscoreArray, noHighscoreItem;
-    return regeneratorRuntime.wrap(function _callee3$(_context3) {
-      while (1) {
-        switch (_context3.prev = _context3.next) {
-          case 0:
-            url = "http://localhost:4000/highscore";
-            _context3.next = 3;
-            return fetch(url);
-
-          case 3:
-            response = _context3.sent;
-            _context3.next = 6;
-            return response.json();
-
-          case 6:
-            highscoreArray = _context3.sent;
-
-
-            // Rensa highscore-listans container innan du fyller den med nya resultat
-            highscoreListContainer.innerHTML = "";
-
-            // Kolla om det finns några highscores att visa
-            if (highscoreArray && highscoreArray.length > 0) {
-              highscoreArray.forEach(function (highscore, index) {
-                var name = highscore.name,
-                    score = highscore.score;
-
-                // Skapa ett li-element för varje highscore
-
-                var listItem = document.createElement("li");
-                listItem.innerText = index + 1 + ". " + name + ": " + score;
-                highscoreListContainer.appendChild(listItem);
-              });
-            } else {
-              // Om det inte finns några highscores, visa ett meddelande
-              noHighscoreItem = document.createElement("li");
-
-              noHighscoreItem.innerText = "Inga high scores tillgängliga.";
-              highscoreListContainer.appendChild(noHighscoreItem);
-            }
-
-          case 9:
-          case "end":
-            return _context3.stop();
-        }
-      }
-    }, _callee3, this);
-  }));
-
-  return function getHighscore() {
-    return _ref3.apply(this, arguments);
-  };
-}();
-
-// Hämta highscore-listan när sidan laddas
+// Funktion för att visa highscore-listan i HTML
 
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-// Grundvärden vid omstart
+// Grundläggande variabler vid omstart
 var playerScore = 0;
 var computerScore = 0;
 var playerName = "";
@@ -251,14 +216,14 @@ var scissorsButton = document.getElementById("scissorsBtn");
 var paperButton = document.getElementById("paperBtn");
 var playerScoreDisplay = document.getElementById("playerScore");
 var computerWins = document.getElementById("computerWins");
-var highscoreListContainer = document.getElementById("highscore-list"); // Lägg till referens till highscore-listans container
+var choicesDisplay = document.getElementById("choices"); // Elementet för att visa valen
 
-// Namninput event
+// Hantera namninput
 playerNameInput.addEventListener("input", function (event) {
   playerName = event.target.value;
 });
 
-// Knappklick event
+// Hantera knappklick
 rockButton.addEventListener("click", function (event) {
   event.preventDefault();
   playGame("sten");
@@ -272,7 +237,7 @@ paperButton.addEventListener("click", function (event) {
   playGame("påse");
 });
 
-// Regler
+// Funktion för att avgöra vinnaren
 function determineWinner(playerChoice, computerChoice) {
   if (playerChoice === "sten" && computerChoice === "sax" || playerChoice === "sax" && computerChoice === "påse" || playerChoice === "påse" && computerChoice === "sten") {
     return "player";
@@ -283,14 +248,15 @@ function determineWinner(playerChoice, computerChoice) {
   }
 }
 
+// Funktion för att spela spelet
 function playGame(playerChoice) {
   var choices = ["sten", "sax", "påse"];
   var computerChoice = choices[Math.floor(Math.random() * choices.length)];
 
   // Visa spelarens och datorns val
-  document.getElementById("choices").innerText = playerName + ": " + playerChoice + " | Dator: " + computerChoice;
+  choicesDisplay.innerText = playerName + ": " + playerChoice + " | Dator: " + computerChoice;
 
-  // Uppdatera poängen baserat på vinnare
+  // Avgör vinnaren
   var winner = determineWinner(playerChoice, computerChoice);
   if (winner === "player") {
     playerScore++;
@@ -301,19 +267,58 @@ function playGame(playerChoice) {
   // Visa poängen
   playerScoreDisplay.innerText = playerName + " po\xE4ng: " + playerScore;
 
-  // Kolla om datorn har vunnit
+  // Kolla om datorn vann
   if (computerScore >= 1) {
     showWinner("Dator");
   }
 }
 
-// Visa vinnaren
+// Funktion för att visa vinnaren och starta om spelet efter 3 sekunder
 function showWinner(winnerName) {
   computerWins.innerText = winnerName + " vann \uD83D\uDE22 f\xF6rs\xF6k igen";
 
-  // Anropa funktionen för att hämta och visa highscore-listan
-  getHighscore();
-}getHighscore();
+  // Lägg till spelaren i highscore-listan om de vinner
+  if (winnerName === playerName) {
+    updateHighscore(playerName, playerScore);
+  }
+
+  // Återställ spelet efter 3 sekunder
+  setTimeout(function () {
+    resetGame();
+  }, 3000); // 3000 millisekunder = 3 sekunder
+}
+
+// Funktion för att återställa spelet
+function resetGame() {
+  playerScore = 0;
+  computerScore = 0;
+  computerWins.innerText = "";
+  playerScoreDisplay.innerText = playerName + " po\xE4ng: " + playerScore;
+  choicesDisplay.innerText = "";
+}function displayHighscore(highscoreArray) {
+  var highscoreListContainer = document.getElementById("highscore-list");
+  highscoreListContainer.innerHTML = "";
+
+  if (highscoreArray && highscoreArray.length > 0) {
+    highscoreArray.forEach(function (highscore, index) {
+      var playerRank = highscore.playerRank,
+          playerName = highscore.playerName,
+          playerScore = highscore.playerScore;
+
+
+      var listItem = document.createElement("li");
+      listItem.innerText = playerRank + ". " + playerName + ": " + playerScore;
+      highscoreListContainer.appendChild(listItem);
+    });
+  } else {
+    var noHighscoreItem = document.createElement("li");
+    noHighscoreItem.innerText = "Ingen highscore tillgänglig.";
+    highscoreListContainer.appendChild(noHighscoreItem);
+  }
+}
+
+// Ladda in highscore-listan när sidan laddas
+loadHighscore();
 },{}],13:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';

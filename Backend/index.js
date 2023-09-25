@@ -25,7 +25,7 @@ app.post("/highscore", (req, res) => {
   highscoreArray.push(newHighscore);
 
   // Sortera listan i fallande ordning baserat på poängen
-  highscoreArray.sort((a, b) => b.score - a.score);
+  highscoreArray.sort((a, b) => b.playerScore - a.playerScore);
 
   // Begränsa listan till de högsta 5 poängen
   highscoreArray = highscoreArray.slice(0, 5);
@@ -39,4 +39,3 @@ app.post("/highscore", (req, res) => {
 app.listen(4000, () => {
   console.log("Listening on port 4000 ...");
 });
-

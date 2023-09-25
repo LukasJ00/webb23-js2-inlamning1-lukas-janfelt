@@ -1,4 +1,4 @@
-// Grundvärden vid omstart
+// Grundläggande variabler vid omstart
 let playerScore = 0;
 let computerScore = 0;
 let playerName = "";
@@ -10,14 +10,14 @@ const scissorsButton = document.getElementById("scissorsBtn");
 const paperButton = document.getElementById("paperBtn");
 const playerScoreDisplay = document.getElementById("playerScore");
 const computerWins = document.getElementById("computerWins");
-const highscoreListContainer = document.getElementById("highscore-list"); // Lägg till referens till highscore-listans container
+const choicesDisplay = document.getElementById("choices"); // Elementet för att visa valen
 
-// Namninput event
+// Hantera namninput
 playerNameInput.addEventListener("input", (event) => {
   playerName = event.target.value;
 });
 
-// Knappklick event
+// Hantera knappklick
 rockButton.addEventListener("click", (event) => {
   event.preventDefault();
   playGame("sten");
@@ -31,7 +31,7 @@ paperButton.addEventListener("click", (event) => {
   playGame("påse");
 });
 
-// Regler
+// Funktion för att avgöra vinnaren
 function determineWinner(playerChoice, computerChoice) {
   if (
     (playerChoice === "sten" && computerChoice === "sax") ||
@@ -50,14 +50,15 @@ function determineWinner(playerChoice, computerChoice) {
   }
 }
 
+// Funktion för att spela spelet
 function playGame(playerChoice) {
   const choices = ["sten", "sax", "påse"];
   const computerChoice = choices[Math.floor(Math.random() * choices.length)];
 
   // Visa spelarens och datorns val
-  document.getElementById("choices").innerText = `${playerName}: ${playerChoice} | Dator: ${computerChoice}`;
+  choicesDisplay.innerText = `${playerName}: ${playerChoice} | Dator: ${computerChoice}`;
 
-  // Uppdatera poängen baserat på vinnare
+  // Avgör vinnaren
   const winner = determineWinner(playerChoice, computerChoice);
   if (winner === "player") {
     playerScore++;
@@ -68,78 +69,93 @@ function playGame(playerChoice) {
   // Visa poängen
   playerScoreDisplay.innerText = `${playerName} poäng: ${playerScore}`;
 
-  // Kolla om datorn har vunnit
+  // Kolla om datorn vann
   if (computerScore >= 1) {
     showWinner("Dator");
   }
 }
 
-// Visa vinnaren
+// Funktion för att visa vinnaren och starta om spelet efter 3 sekunder
 function showWinner(winnerName) {
   computerWins.innerText = `${winnerName} vann 😢 försök igen`;
 
-  // Anropa funktionen för att hämta och visa highscore-listan
-  getHighscore();
+  // Lägg till spelaren i highscore-listan om de vinner
+  if (winnerName === playerName) {
+    updateHighscore(playerName, playerScore);
+  }
+
+  // Återställ spelet efter 3 sekunder
+  setTimeout(() => {
+    resetGame();
+  }, 3000); // 3000 millisekunder = 3 sekunder
 }
 
-// Funktion för att posta highscore till servern
-async function postHighscore(playerName, playerScore) {
-  const url = "http://localhost:4000/highscore";
+// Funktion för att återställa spelet
+function resetGame() {
+  playerScore = 0;
+  computerScore = 0;
+  computerWins.innerText = "";
+  playerScoreDisplay.innerText = `${playerName} poäng: ${playerScore}`;
+  choicesDisplay.innerText = "";
+}
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ playerName, score: playerScore }), // Skicka spelarens namn och poäng till servern
-  });
+// Funktion för att uppdatera highscore-listan
+async function updateHighscore(playerName, playerScore) {
+  const url = 'http://localhost:4000/highscore';
 
-  if (response.status === 200) {
-    console.log("Highscore uppdaterad");
-  } else {
-    console.error("Något gick fel när highscore skulle uppdateras");
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ playerRank: 0, playerName, playerScore }), // Här lägger vi till playerRank med 0 som standardvärde
+    });
+
+    if (response.status === 200) {
+      console.log('Highscore uppdaterad');
+      // Ladda om highscore-listan efter att den har uppdaterats
+      loadHighscore();
+    } else {
+      console.error('Något gick fel när highscore skulle uppdateras');
+    }
+  } catch (error) {
+    console.error('Något gick fel:', error);
   }
 }
 
-// Funktion som anropas när spelet är över och resultatet ska sparas i highscore-listan
-async function restartGame() {
-  // Anropa postHighscore för att spara resultatet i highscore-listan
-  await postHighscore(playerName, playerScore);
+// Funktion för att ladda in highscore-listan när sidan laddas
+async function loadHighscore() {
+  const url = 'http://localhost:4000/highscore';
 
-  playerScore = 0;
-  computerScore = 0;
-  computerWins.innerText = ""; // Rensa meddelandet "Datorn vann"
-  playerScoreDisplay.innerText = `${playerName} poäng: ${playerScore}`;
-  document.getElementById("choices").innerText = "";
+  try {
+    const response = await fetch(url);
+    const highscore = await response.json();
+
+    displayHighscore(highscore);
+  } catch (error) {
+    console.error('Något gick fel:', error);
+  }
 }
-
-// Funktion för att hämta och visa highscore-listan
-async function getHighscore() {
-  const url = "http://localhost:4000/highscore";
-
-  const response = await fetch(url);
-  const highscoreArray = await response.json();
-
-  // Rensa highscore-listans container innan du fyller den med nya resultat
+// Funktion för att visa highscore-listan i HTML
+function displayHighscore(highscoreArray) {
+  const highscoreListContainer = document.getElementById("highscore-list");
   highscoreListContainer.innerHTML = "";
 
-  // Kolla om det finns några highscores att visa
   if (highscoreArray && highscoreArray.length > 0) {
     highscoreArray.forEach((highscore, index) => {
-      const { name, score } = highscore;
+      const { playerRank, playerName, playerScore } = highscore;
 
-      // Skapa ett li-element för varje highscore
       const listItem = document.createElement("li");
-      listItem.innerText = `${index + 1}. ${name}: ${score}`;
+      listItem.innerText = `${playerRank}. ${playerName}: ${playerScore}`;
       highscoreListContainer.appendChild(listItem);
     });
   } else {
-    // Om det inte finns några highscores, visa ett meddelande
     const noHighscoreItem = document.createElement("li");
-    noHighscoreItem.innerText = "Inga high scores tillgängliga.";
+    noHighscoreItem.innerText = "Ingen highscore tillgänglig.";
     highscoreListContainer.appendChild(noHighscoreItem);
   }
 }
 
-// Hämta highscore-listan när sidan laddas
-getHighscore();
+// Ladda in highscore-listan när sidan laddas
+loadHighscore();
