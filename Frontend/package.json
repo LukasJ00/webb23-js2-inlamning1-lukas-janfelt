@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "start": "npm run dev",
     "dev": "parcel ./src/modules/index.html",
     "build": "parcel build ./src/modules/index.html --dist-dir docs --public-url./",
     "clean": "del-cli ./.parcel-cache ./docs ./dist"

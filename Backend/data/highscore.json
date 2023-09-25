@@ -1,22 +1,27 @@
 [
-    {
-        "name": "Titanic",
-        "points": 10
-    },
-    {
-        "name": "Titanic",
-        "points": 9
-    },
-    {
-        "name": "Titanic",
-        "points": 8
-    },
-    {
-        "name": "Titanic",
-        "points": 7
-    },
-    {
-        "name": "Titanic",
-        "points": 6
-    }
+  {
+    "rank": 1,
+    "playerName": "",
+    "playerScore": ""
+  },
+  {
+    "rank": 2,
+    "playerName": "",
+    "playerScore": ""
+  },
+  {
+    "rank": 3,
+    "playerName": "",
+    "playerScore": ""
+  },
+  {
+    "rank": 4,
+    "playerName": "",
+    "playerScore": ""
+  },
+  {
+    "rank": 5,
+    "playerName": "",
+    "playerScore": ""
+  }
 ]
