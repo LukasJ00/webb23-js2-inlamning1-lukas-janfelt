@@ -93,26 +93,25 @@ function determineWinner(playerChoice, computerChoice) {
       document.getElementById("choices").innerText = "";
     }
 
-    async function getMovies(){
-      const url = 'http://localhost:4000/movies';
-  
-      const response = await fetch(url);
-      const movies = await response.json();
-  
-      // console.log(movies);
-      return movies;
-  }
-  
-  function displayMovies(movieArray){
-      // console.log(movieArray);
-  
-      for(const movies of movieArray){
-          const {name, year, director, genre} = movies;
-  
-          const h1 = document.createElement('h1');
-          h1.innerText = name;
-          document.body.append(h1);
+    async function sendHighscore(playerName, playerScore) {
+      const url = 'http://localhost:4000/highscore';
+    
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name: playerName, points: playerScore }),
+        });
+        const updatedHighscore = await response.json();
+    
+        // Uppdatera highscore-listan på webbsidan
+        displayHighscore(updatedHighscore);
+      } catch (error) {
+        console.error('Error sending highscore:', error);
       }
-  }
-  
-  getMovies().then( displayMovies );
+    }
+    
+    // Anropa sendHighscore() med spelarens namn och poäng när spelet är klart
+    sendHighscore(playerName, playerScore);
