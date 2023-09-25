@@ -123,7 +123,7 @@ async function postHighscore(playerName, playerScore) {
 
 // Funktion för att hämta highscore-listan från servern
 async function getHighscore() {
-  const url = "http://localhost:4000/";
+  const url = "http://localhost:4000";
 
   try {
     const response = await fetch(url);
