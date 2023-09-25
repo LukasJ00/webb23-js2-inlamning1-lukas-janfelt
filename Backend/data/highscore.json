@@ -1,27 +1,22 @@
 [
-  {
-    "rank": 1,
-    "playerName": "",
-    "playerScore": ""
-  },
-  {
-    "rank": 2,
-    "playerName": "",
-    "playerScore": ""
-  },
-  {
-    "rank": 3,
-    "playerName": "",
-    "playerScore": ""
-  },
-  {
-    "rank": 4,
-    "playerName": "",
-    "playerScore": ""
-  },
-  {
-    "rank": 5,
-    "playerName": "",
-    "playerScore": ""
-  }
-]
+    {
+      "name": "Spelare 1",
+      "score": 100
+    },
+    {
+      "name": "Spelare 2",
+      "score": 85
+    },
+    {
+      "name": "Spelare 3",
+      "score": 72
+    },
+    {
+      "name": "Spelare 4",
+      "score": 60
+    },
+    {
+      "name": "Spelare 5",
+      "score": 45
+    }
+  ]

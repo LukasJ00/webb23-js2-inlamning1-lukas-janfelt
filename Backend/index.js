@@ -1,27 +1,40 @@
-const express = require("express"); //Importerar express från mode_modules
+const express = require("express");
 const fs = require("fs");
-
 const app = express();
-app.use(express.json()); //tala om att vi ska hantera data i json-format
-app.use(function (req, res, next) {
-  //Tillåt requests från alla origins
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
+const cors = require("cors");
+app.use(express.json());
+app.use(cors());
+
+// Sökväg till JSON-filen med highscore-listan
+const highscoreFilePath = "./data/highscore.json";
+
+app.get("/highscore", (req, res) => {
+  console.log("Get request received at /highscore");
+  const rawHighscore = fs.readFileSync(highscoreFilePath);
+  const highscoreArray = JSON.parse(rawHighscore);
+  console.log(highscoreArray);
+  res.send(highscoreArray);
 });
 
-app.get('/highscore', (req, res)=>{
-    console.log('Get request received at /highscore');
+app.post("/highscore", (req, res) => {
+  const newHighscore = req.body; // Förväntar sig att frontend skickar spelarens namn och poäng
+  const rawHighscore = fs.readFileSync(highscoreFilePath);
+  let highscoreArray = JSON.parse(rawHighscore);
 
-    const rawHighscore = fs.readFileSync("./data/highscore.json");
-    const highscoreArray = JSON.parse(rawHighscore);
-    console.log(highscoreArray);
+  // Lägg till det nya poäng-objektet i listan
+  highscoreArray.push(newHighscore);
 
-    res.send(highscoreArray);
-})
+  // Sortera listan i fallande ordning baserat på poängen
+  highscoreArray.sort((a, b) => b.score - a.score);
+
+  // Begränsa listan till de högsta 5 poängen
+  highscoreArray = highscoreArray.slice(0, 5);
+
+  // Spara den uppdaterade highscore-listan tillbaka i JSON-filen
+  fs.writeFileSync(highscoreFilePath, JSON.stringify(highscoreArray, null, 2));
+
+  res.status(200).send({ message: "Highscore uppdaterad" });
+});
 
 app.listen(4000, () => {
   console.log("Listening on port 4000 ...");

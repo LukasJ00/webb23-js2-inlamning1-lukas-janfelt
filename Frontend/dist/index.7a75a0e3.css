@@ -1,0 +1,30 @@
+body {
+  text-align: center;
+  background-color: #bdddeb6d;
+  flex-flow: column wrap;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+input {
+  flex-flow: column wrap;
+  width: auto;
+  height: 1.5rem;
+  margin: auto;
+  padding: 0;
+  display: flex;
+}
+
+button {
+  margin: .5rem;
+}
+
+form {
+  padding: 1rem;
+  box-shadow: 0 4px 8px #000;
+}
+
+/*# sourceMappingURL=index.7a75a0e3.css.map */
