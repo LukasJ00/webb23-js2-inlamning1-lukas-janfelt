@@ -126,62 +126,11 @@ function displayHighscore(highscoreArray){
   });
 }
 
-getHighscore().then( displayHighscore );
+getHighscore().then((highscoreArray) => {
+  displayHighscore(highscoreArray);
+});
 
 
 
 
 
-
-// // Funktion för att spara resultatet i highscore-listan
-// async function postHighscore(playerName, playerScore) {
-//   const url = 'http://localhost:4000/highscore';
-
-//   try {
-//     const response = await fetch(url, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({ playerName, playerScore }),
-//     });
-
-//     const highscoreList = await response.json();
-//     // Uppdatera din highscore-lista i din användargränssnitt om så behövs
-//   } catch (error) {
-//     console.error('Error posting highscore:', error);
-//   }
-// }
-
-// // Funktion för att hämta highscore-listan från servern
-// async function getHighscore() {
-//   const url = "http://localhost:4000";
-
-//   try {
-//     const response = await fetch(url);
-//     const highscoreList = await response.json();
-//     return highscoreList;
-//   } catch (error) {
-//     console.error("Error fetching highscore:", error);
-//     return [];
-//   }
-// }
-
-// // Funktion för att visa highscore-listan
-// async function displayHighscore() {
-//   const highscoreList = await getHighscore();
-//   const highscoreListContainer = document.getElementById("highscore-list");
-
-//   // Rensa befintliga highscore-listan
-//   highscoreListContainer.innerHTML = "";
-
-//   // Loopa igenom highscore-listan och skapa listelement för varje spelare
-//   highscoreList.forEach((player, index) => {
-//     const listItem = document.createElement("li");
-//     listItem.innerText = `${index + 1}. ${player.playerName}: ${player.playerScore}`;
-//     highscoreListContainer.appendChild(listItem);
-//   });
-// }
-
-// // Anropa displayHighscore när sidan laddas och efter att highscore har uppdaterats
-// displayHighscore();
