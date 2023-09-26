@@ -73,16 +73,17 @@ function playGame(playerChoice) {
   if (computerScore >= 1) {
     showWinner("Dator");
   }
+
+  // Kolla om spelaren har en hög poäng och bör uppdatera highscore-listan
+  const highscoreUpdateThreshold = 5; // Justera tröskelvärdet efter dina preferenser
+  if (playerScore > highscoreUpdateThreshold) {
+    updateHighscore(playerName, playerScore);
+  }
 }
 
 // Funktion för att visa vinnaren och starta om spelet efter 3 sekunder
 function showWinner(winnerName) {
   computerWins.innerText = `${winnerName} vann 😢 försök igen`;
-
-  // Lägg till spelaren i highscore-listan om de vinner
-  if (winnerName === playerName) {
-    updateHighscore(playerName, playerScore);
-  }
 
   // Återställ spelet efter 3 sekunder
   setTimeout(() => {
@@ -104,15 +105,28 @@ async function updateHighscore(playerName, playerScore) {
   const url = 'http://localhost:4000/highscore';
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(url);
+    let highscore = await response.json();
+
+    // Lägg till den nya poängen i highscore-listan
+    highscore.push({ playerName, playerScore });
+
+    // Sortera highscore-listan i fallande ordning baserat på poängen
+    highscore.sort((a, b) => b.playerScore - a.playerScore);
+
+    // Begränsa listan till de högsta 5 poängen
+    highscore = highscore.slice(0, 5);
+
+    // Spara den uppdaterade highscore-listan tillbaka på servern
+    const updateResponse = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ playerRank: 0, playerName, playerScore }), // Här lägger vi till playerRank med 0 som standardvärde
+      body: JSON.stringify(highscore),
     });
 
-    if (response.status === 200) {
+    if (updateResponse.status === 200) {
       console.log('Highscore uppdaterad');
       // Ladda om highscore-listan efter att den har uppdaterats
       loadHighscore();
@@ -137,6 +151,7 @@ async function loadHighscore() {
     console.error('Något gick fel:', error);
   }
 }
+
 // Funktion för att visa highscore-listan i HTML
 function displayHighscore(highscoreArray) {
   const highscoreListContainer = document.getElementById("highscore-list");

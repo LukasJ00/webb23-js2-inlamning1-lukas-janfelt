@@ -98,13 +98,13 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   // Override the current require with this new one
   return newRequire;
-})({6:[function(require,module,exports) {
+})({2:[function(require,module,exports) {
 
 
 // Funktion för att uppdatera highscore-listan
 var updateHighscore = function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(playerName, playerScore) {
-    var url, response;
+    var url, response, highscore, updateResponse;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -112,40 +112,64 @@ var updateHighscore = function () {
             url = 'http://localhost:4000/highscore';
             _context.prev = 1;
             _context.next = 4;
+            return fetch(url);
+
+          case 4:
+            response = _context.sent;
+            _context.next = 7;
+            return response.json();
+
+          case 7:
+            highscore = _context.sent;
+
+
+            // Lägg till den nya poängen i highscore-listan
+            highscore.push({ playerName: playerName, playerScore: playerScore });
+
+            // Sortera highscore-listan i fallande ordning baserat på poängen
+            highscore.sort(function (a, b) {
+              return b.playerScore - a.playerScore;
+            });
+
+            // Begränsa listan till de högsta 5 poängen
+            highscore = highscore.slice(0, 5);
+
+            // Spara den uppdaterade highscore-listan tillbaka på servern
+            _context.next = 13;
             return fetch(url, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify({ playerRank: 0, playerName: playerName, playerScore: playerScore }) // Här lägger vi till playerRank med 0 som standardvärde
+              body: JSON.stringify(highscore)
             });
 
-          case 4:
-            response = _context.sent;
+          case 13:
+            updateResponse = _context.sent;
 
 
-            if (response.status === 200) {
+            if (updateResponse.status === 200) {
               console.log('Highscore uppdaterad');
               // Ladda om highscore-listan efter att den har uppdaterats
               loadHighscore();
             } else {
               console.error('Något gick fel när highscore skulle uppdateras');
             }
-            _context.next = 11;
+            _context.next = 20;
             break;
 
-          case 8:
-            _context.prev = 8;
+          case 17:
+            _context.prev = 17;
             _context.t0 = _context["catch"](1);
 
             console.error('Något gick fel:', _context.t0);
 
-          case 11:
+          case 20:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[1, 8]]);
+    }, _callee, this, [[1, 17]]);
   }));
 
   return function updateHighscore(_x, _x2) {
@@ -199,6 +223,7 @@ var loadHighscore = function () {
     return _ref2.apply(this, arguments);
   };
 }();
+
 // Funktion för att visa highscore-listan i HTML
 
 
@@ -271,16 +296,17 @@ function playGame(playerChoice) {
   if (computerScore >= 1) {
     showWinner("Dator");
   }
+
+  // Kolla om spelaren har en hög poäng och bör uppdatera highscore-listan
+  var highscoreUpdateThreshold = 5; // Justera tröskelvärdet efter dina preferenser
+  if (playerScore > highscoreUpdateThreshold) {
+    updateHighscore(playerName, playerScore);
+  }
 }
 
 // Funktion för att visa vinnaren och starta om spelet efter 3 sekunder
 function showWinner(winnerName) {
   computerWins.innerText = winnerName + " vann \uD83D\uDE22 f\xF6rs\xF6k igen";
-
-  // Lägg till spelaren i highscore-listan om de vinner
-  if (winnerName === playerName) {
-    updateHighscore(playerName, playerScore);
-  }
 
   // Återställ spelet efter 3 sekunder
   setTimeout(function () {
@@ -319,7 +345,7 @@ function resetGame() {
 
 // Ladda in highscore-listan när sidan laddas
 loadHighscore();
-},{}],13:[function(require,module,exports) {
+},{}],6:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -348,7 +374,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '55499' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '55756' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -489,5 +515,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[13,6], null)
+},{}]},{},[6,2], null)
 //# sourceMappingURL=/main.72f7f51f.map
