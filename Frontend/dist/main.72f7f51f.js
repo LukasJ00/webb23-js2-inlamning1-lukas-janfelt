@@ -273,28 +273,32 @@ function playGame(playerChoice) {
   var winner = determineWinner(playerChoice, computerChoice);
   if (winner === "player") {
     playerScore++;
+    // Visa poängen
+    playerScoreDisplay.innerText = playerName + " po\xE4ng: " + playerScore;
+
+    // Uppdatera highscore om spelaren får ett högre poäng än någon annan i listan
+    if (playerScore > 1 && playerScore > highscoreArray[0].score) {
+      updateHighscore(playerName, playerScore);
+    }
   } else if (winner === "computer") {
     computerScore++;
   }
-
-  // Visa poängen
-  playerScoreDisplay.innerText = playerName + " po\xE4ng: " + playerScore;
 
   // Kolla om datorn vann
   if (computerScore >= 1) {
     showWinner("Dator");
   }
+}
 
-  // Efter att du har ökat spelarens poäng
-  // Kolla om spelaren har nått poängtröskeln för att uppdatera highscore
-  var highscoreUpdateThreshold = 1; // Ändra detta värde för att inkludera spelare med minst ett poäng
-  if (playerScore >= highscoreUpdateThreshold) {
-    // Kontrollera att playerName och playerScore har värden innan du anropar updateHighscore
-    if (playerName && playerScore) {
-      updateHighscore(playerName, playerScore);
-    } else {
-      console.error("Ogiltigt namn eller poängvärde");
-    }
+// Efter att du har ökat spelarens poäng
+// Kolla om spelaren har nått poängtröskeln för att uppdatera highscore
+var highscoreUpdateThreshold = 1; // Ändra detta värde för att inkludera spelare med minst ett poäng
+if (playerScore >= highscoreUpdateThreshold) {
+  // Kontrollera att playerName och playerScore har värden innan du anropar updateHighscore
+  if (playerName && playerScore) {
+    updateHighscore(playerName, playerScore);
+  } else {
+    console.error("Ogiltigt namn eller poängvärde");
   }
 }
 
@@ -355,7 +359,7 @@ function resetGame() {
 }
 
 getHighscore();
-},{}],11:[function(require,module,exports) {
+},{}],12:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -525,5 +529,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[11,3], null)
+},{}]},{},[12,3], null)
 //# sourceMappingURL=/main.72f7f51f.map

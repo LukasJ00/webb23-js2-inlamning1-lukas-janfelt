@@ -55,24 +55,29 @@ function playGame(playerChoice) {
   const choices = ["sten", "sax", "påse"];
   const computerChoice = choices[Math.floor(Math.random() * choices.length)];
 
-  // Visa spelarens och datorns val
-  choicesDisplay.innerText = `${playerName}: ${playerChoice} | Dator: ${computerChoice}`;
+   // Visa spelarens och datorns val
+   choicesDisplay.innerText = `${playerName}: ${playerChoice} | Dator: ${computerChoice}`;
 
   // Avgör vinnaren
   const winner = determineWinner(playerChoice, computerChoice);
   if (winner === "player") {
     playerScore++;
+    // Visa poängen
+    playerScoreDisplay.innerText = `${playerName} poäng: ${playerScore}`;
+
+    // Uppdatera highscore om spelaren får ett högre poäng än någon annan i listan
+    if (playerScore > 1 && playerScore > highscoreArray[0].score) {
+      updateHighscore(playerName, playerScore);
+    }
   } else if (winner === "computer") {
     computerScore++;
   }
-
-  // Visa poängen
-  playerScoreDisplay.innerText = `${playerName} poäng: ${playerScore}`;
 
   // Kolla om datorn vann
   if (computerScore >= 1) {
     showWinner("Dator");
   }
+}
 
   // Efter att du har ökat spelarens poäng
   // Kolla om spelaren har nått poängtröskeln för att uppdatera highscore
@@ -85,7 +90,7 @@ function playGame(playerChoice) {
       console.error("Ogiltigt namn eller poängvärde");
     }
   }
-}
+
 
 // Funktion för att visa vinnaren och starta om spelet efter 3 sekunder
 function showWinner(winnerName) {
