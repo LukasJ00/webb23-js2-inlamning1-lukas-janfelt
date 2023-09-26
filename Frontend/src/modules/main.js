@@ -171,4 +171,5 @@ function displayHighscore(highscoreArray) {
   }
 }
 
+
   getHighscore();

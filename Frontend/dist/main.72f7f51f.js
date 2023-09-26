@@ -359,7 +359,7 @@ function resetGame() {
 }
 
 getHighscore();
-},{}],12:[function(require,module,exports) {
+},{}],13:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -529,5 +529,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[12,3], null)
+},{}]},{},[13,3], null)
 //# sourceMappingURL=/main.72f7f51f.map
