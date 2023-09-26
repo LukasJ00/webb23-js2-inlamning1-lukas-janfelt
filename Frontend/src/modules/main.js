@@ -77,7 +77,12 @@ function playGame(playerChoice) {
   // Kolla om spelaren har en hög poäng och bör uppdatera highscore-listan
   const highscoreUpdateThreshold = 5; // Justera tröskelvärdet efter dina preferenser
   if (playerScore > highscoreUpdateThreshold) {
-    updateHighscore(playerName, playerScore);
+    // Kontrollera att playerName och playerScore har värden innan du anropar updateHighscore
+    if (playerName && playerScore) {
+      updateHighscore(playerName, playerScore);
+    } else {
+      console.error("Ogiltigt namn eller poängvärde");
+    }
   }
 }
 
@@ -100,38 +105,29 @@ function resetGame() {
   choicesDisplay.innerText = "";
 }
 
-// Funktion för att uppdatera highscore-listan
 async function updateHighscore(playerName, playerScore) {
+  if (!playerName || !playerScore) {
+    console.error("Ogiltigt namn eller poängvärde");
+    return;
+  }
+
   const url = 'http://localhost:4000/highscore';
 
   try {
-    const response = await fetch(url);
-    let highscore = await response.json();
-
-    // Lägg till den nya poängen i highscore-listan
-    highscore.push({ playerName, playerScore });
-
-    // Sortera highscore-listan i fallande ordning baserat på poängen
-    highscore.sort((a, b) => b.playerScore - a.playerScore);
-
-    // Begränsa listan till de högsta 5 poängen
-    highscore = highscore.slice(0, 5);
-
-    // Spara den uppdaterade highscore-listan tillbaka på servern
-    const updateResponse = await fetch(url, {
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(highscore),
+      body: JSON.stringify({ playerName, playerScore }),
     });
 
-    if (updateResponse.status === 200) {
+    if (response.status === 200) {
       console.log('Highscore uppdaterad');
       // Ladda om highscore-listan efter att den har uppdaterats
       loadHighscore();
     } else {
-      console.error('Något gick fel när highscore skulle uppdateras');
+      console.error('Något gick fel när highscore skulle uppdateras. Statuskod:', response.status);
     }
   } catch (error) {
     console.error('Något gick fel:', error);
@@ -174,3 +170,6 @@ function displayHighscore(highscoreArray) {
 
 // Ladda in highscore-listan när sidan laddas
 loadHighscore();
+updateHighscore(playerName, playerScore);
+console.log('playerName:', playerName);
+console.log('playerScore:', playerScore);
