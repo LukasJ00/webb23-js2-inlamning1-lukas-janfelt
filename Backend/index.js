@@ -57,6 +57,10 @@ app.post('/newscore', (req, res) => {
   // Begränsa highscore-listan till de bästa 5 resultaten
   highscoreArray.splice(5);
 
+  // Ta bort tomma objekt från highscoreArray efter att du har sorterat och begränsat listan
+  highscoreArray = highscoreArray.filter((entry) => entry.name && entry.score !== undefined);
+
+
   // Spara den uppdaterade highscore-listan till filen
   fs.writeFileSync('./data/highscore.json', JSON.stringify(highscoreArray));
 

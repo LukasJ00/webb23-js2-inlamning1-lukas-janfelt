@@ -287,7 +287,7 @@ function playGame(playerChoice) {
 
   // Efter att du har ökat spelarens poäng
   // Kolla om spelaren har nått poängtröskeln för att uppdatera highscore
-  var highscoreUpdateThreshold = 5; // Justera tröskelvärdet efter dina preferenser
+  var highscoreUpdateThreshold = 1; // Ändra detta värde för att inkludera spelare med minst ett poäng
   if (playerScore >= highscoreUpdateThreshold) {
     // Kontrollera att playerName och playerScore har värden innan du anropar updateHighscore
     if (playerName && playerScore) {
@@ -355,7 +355,7 @@ function resetGame() {
 }
 
 getHighscore();
-},{}],6:[function(require,module,exports) {
+},{}],11:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -525,5 +525,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[6,3], null)
+},{}]},{},[11,3], null)
 //# sourceMappingURL=/main.72f7f51f.map

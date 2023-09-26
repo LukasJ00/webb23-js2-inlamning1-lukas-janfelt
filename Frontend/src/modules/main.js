@@ -76,7 +76,7 @@ function playGame(playerChoice) {
 
   // Efter att du har ökat spelarens poäng
   // Kolla om spelaren har nått poängtröskeln för att uppdatera highscore
-  const highscoreUpdateThreshold = 5; // Justera tröskelvärdet efter dina preferenser
+  const highscoreUpdateThreshold = 1; // Ändra detta värde för att inkludera spelare med minst ett poäng
   if (playerScore >= highscoreUpdateThreshold) {
     // Kontrollera att playerName och playerScore har värden innan du anropar updateHighscore
     if (playerName && playerScore) {
