@@ -74,9 +74,10 @@ function playGame(playerChoice) {
     showWinner("Dator");
   }
 
-  // Kolla om spelaren har en hög poäng och bör uppdatera highscore-listan
+  // Efter att du har ökat spelarens poäng
+  // Kolla om spelaren har nått poängtröskeln för att uppdatera highscore
   const highscoreUpdateThreshold = 5; // Justera tröskelvärdet efter dina preferenser
-  if (playerScore > highscoreUpdateThreshold) {
+  if (playerScore >= highscoreUpdateThreshold) {
     // Kontrollera att playerName och playerScore har värden innan du anropar updateHighscore
     if (playerName && playerScore) {
       updateHighscore(playerName, playerScore);
@@ -105,13 +106,9 @@ function resetGame() {
   choicesDisplay.innerText = "";
 }
 
+// Anropa updateHighscore-funktionen när spelaren når hög poäng
 async function updateHighscore(playerName, playerScore) {
-  if (!playerName || !playerScore) {
-    console.error("Ogiltigt namn eller poängvärde");
-    return;
-  }
-
-  const url = 'http://localhost:4000/highscore';
+  const url = 'http://localhost:4000/newscore';
 
   try {
     const response = await fetch(url, {
@@ -119,57 +116,54 @@ async function updateHighscore(playerName, playerScore) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ playerName, playerScore }),
+      body: JSON.stringify({ name: playerName, score: playerScore }),
     });
 
-    if (response.status === 200) {
+    if (response.ok) {
       console.log('Highscore uppdaterad');
-      // Ladda om highscore-listan efter att den har uppdaterats
-      loadHighscore();
+      // Observera att vi inte använder highscoreArray här
+      // eftersom vi inte har den uppdaterade listan när vi anropar denna funktion
     } else {
-      console.error('Något gick fel när highscore skulle uppdateras. Statuskod:', response.status);
+      console.error('Kunde inte uppdatera highscore');
     }
   } catch (error) {
     console.error('Något gick fel:', error);
   }
 }
 
-// Funktion för att ladda in highscore-listan när sidan laddas
-async function loadHighscore() {
+// Ladda och visa highscore-listan när sidan laddas
+async function getHighscore() {
   const url = 'http://localhost:4000/highscore';
 
   try {
     const response = await fetch(url);
-    const highscore = await response.json();
-
-    displayHighscore(highscore);
+    if (response.ok) {
+      const highscore = await response.json();
+      displayHighscore(highscore);
+    } else {
+      console.error('Kunde inte hämta highscore');
+    }
   } catch (error) {
     console.error('Något gick fel:', error);
   }
 }
 
-// Funktion för att visa highscore-listan i HTML
+// Funktion för att visa highscore-listan
 function displayHighscore(highscoreArray) {
-  const highscoreListContainer = document.getElementById("highscore-list");
-  highscoreListContainer.innerHTML = "";
+  const highscoreListElement = document.getElementById("highscore-list");
 
-  if (highscoreArray && highscoreArray.length > 0) {
-    highscoreArray.forEach((highscore, index) => {
-      const { playerRank, playerName, playerScore } = highscore;
+  // Rensa tidigare highscore-lista
+  highscoreListElement.innerHTML = "";
 
-      const listItem = document.createElement("li");
-      listItem.innerText = `${playerRank}. ${playerName}: ${playerScore}`;
-      highscoreListContainer.appendChild(listItem);
-    });
-  } else {
-    const noHighscoreItem = document.createElement("li");
-    noHighscoreItem.innerText = "Ingen highscore tillgänglig.";
-    highscoreListContainer.appendChild(noHighscoreItem);
+  for (const highscore of highscoreArray) {
+    const { name, score } = highscore;
+
+    const p = document.createElement("p");
+    p.innerText = `${name}: ${score}`;
+
+    // Lägg till p-elementet i highscore-listan
+    highscoreListElement.appendChild(p);
   }
 }
 
-// Ladda in highscore-listan när sidan laddas
-loadHighscore();
-updateHighscore(playerName, playerScore);
-console.log('playerName:', playerName);
-console.log('playerScore:', playerScore);
+  getHighscore();

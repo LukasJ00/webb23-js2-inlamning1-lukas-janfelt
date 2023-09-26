@@ -99,6 +99,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   // Override the current require with this new one
   return newRequire;
 })({3:[function(require,module,exports) {
+
+
+// Anropa updateHighscore-funktionen när spelaren når hög poäng
 var updateHighscore = function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(playerName, playerScore) {
     var url, response;
@@ -106,52 +109,43 @@ var updateHighscore = function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            if (!(!playerName || !playerScore)) {
-              _context.next = 3;
-              break;
-            }
-
-            console.error("Ogiltigt namn eller poängvärde");
-            return _context.abrupt("return");
-
-          case 3:
-            url = 'http://localhost:4000/highscore';
-            _context.prev = 4;
-            _context.next = 7;
+            url = 'http://localhost:4000/newscore';
+            _context.prev = 1;
+            _context.next = 4;
             return fetch(url, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify({ playerName: playerName, playerScore: playerScore })
+              body: JSON.stringify({ name: playerName, score: playerScore })
             });
 
-          case 7:
+          case 4:
             response = _context.sent;
 
 
-            if (response.status === 200) {
+            if (response.ok) {
               console.log('Highscore uppdaterad');
-              // Ladda om highscore-listan efter att den har uppdaterats
-              loadHighscore();
+              // Observera att vi inte använder highscoreArray här
+              // eftersom vi inte har den uppdaterade listan när vi anropar denna funktion
             } else {
-              console.error('Något gick fel när highscore skulle uppdateras. Statuskod:', response.status);
+              console.error('Kunde inte uppdatera highscore');
             }
-            _context.next = 14;
+            _context.next = 11;
             break;
 
-          case 11:
-            _context.prev = 11;
-            _context.t0 = _context["catch"](4);
+          case 8:
+            _context.prev = 8;
+            _context.t0 = _context["catch"](1);
 
             console.error('Något gick fel:', _context.t0);
 
-          case 14:
+          case 11:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, this, [[4, 11]]);
+    }, _callee, this, [[1, 8]]);
   }));
 
   return function updateHighscore(_x, _x2) {
@@ -159,10 +153,10 @@ var updateHighscore = function () {
   };
 }();
 
-// Funktion för att ladda in highscore-listan när sidan laddas
+// Ladda och visa highscore-listan när sidan laddas
 
 
-var loadHighscore = function () {
+var getHighscore = function () {
   var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
     var url, response, highscore;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
@@ -176,37 +170,49 @@ var loadHighscore = function () {
 
           case 4:
             response = _context2.sent;
-            _context2.next = 7;
+
+            if (!response.ok) {
+              _context2.next = 12;
+              break;
+            }
+
+            _context2.next = 8;
             return response.json();
 
-          case 7:
+          case 8:
             highscore = _context2.sent;
 
-
             displayHighscore(highscore);
-            _context2.next = 14;
+            _context2.next = 13;
             break;
 
-          case 11:
-            _context2.prev = 11;
+          case 12:
+            console.error('Kunde inte hämta highscore');
+
+          case 13:
+            _context2.next = 18;
+            break;
+
+          case 15:
+            _context2.prev = 15;
             _context2.t0 = _context2["catch"](1);
 
             console.error('Något gick fel:', _context2.t0);
 
-          case 14:
+          case 18:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, this, [[1, 11]]);
+    }, _callee2, this, [[1, 15]]);
   }));
 
-  return function loadHighscore() {
+  return function getHighscore() {
     return _ref2.apply(this, arguments);
   };
 }();
 
-// Funktion för att visa highscore-listan i HTML
+// Funktion för att visa highscore-listan
 
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -279,9 +285,10 @@ function playGame(playerChoice) {
     showWinner("Dator");
   }
 
-  // Kolla om spelaren har en hög poäng och bör uppdatera highscore-listan
+  // Efter att du har ökat spelarens poäng
+  // Kolla om spelaren har nått poängtröskeln för att uppdatera highscore
   var highscoreUpdateThreshold = 5; // Justera tröskelvärdet efter dina preferenser
-  if (playerScore > highscoreUpdateThreshold) {
+  if (playerScore >= highscoreUpdateThreshold) {
     // Kontrollera att playerName och playerScore har värden innan du anropar updateHighscore
     if (playerName && playerScore) {
       updateHighscore(playerName, playerScore);
@@ -308,36 +315,47 @@ function resetGame() {
   computerWins.innerText = "";
   playerScoreDisplay.innerText = playerName + " po\xE4ng: " + playerScore;
   choicesDisplay.innerText = "";
-}
+}function displayHighscore(highscoreArray) {
+  var highscoreListElement = document.getElementById("highscore-list");
 
-function displayHighscore(highscoreArray) {
-  var highscoreListContainer = document.getElementById("highscore-list");
-  highscoreListContainer.innerHTML = "";
+  // Rensa tidigare highscore-lista
+  highscoreListElement.innerHTML = "";
 
-  if (highscoreArray && highscoreArray.length > 0) {
-    highscoreArray.forEach(function (highscore, index) {
-      var playerRank = highscore.playerRank,
-          playerName = highscore.playerName,
-          playerScore = highscore.playerScore;
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = highscoreArray[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var highscore = _step.value;
+      var name = highscore.name,
+          score = highscore.score;
 
 
-      var listItem = document.createElement("li");
-      listItem.innerText = playerRank + ". " + playerName + ": " + playerScore;
-      highscoreListContainer.appendChild(listItem);
-    });
-  } else {
-    var noHighscoreItem = document.createElement("li");
-    noHighscoreItem.innerText = "Ingen highscore tillgänglig.";
-    highscoreListContainer.appendChild(noHighscoreItem);
+      var p = document.createElement("p");
+      p.innerText = name + ": " + score;
+
+      // Lägg till p-elementet i highscore-listan
+      highscoreListElement.appendChild(p);
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
   }
 }
 
-// Ladda in highscore-listan när sidan laddas
-loadHighscore();
-updateHighscore(playerName, playerScore);
-console.log('playerName:', playerName);
-console.log('playerScore:', playerScore);
-},{}],11:[function(require,module,exports) {
+getHighscore();
+},{}],6:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -366,7 +384,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '55984' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '55214' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -507,5 +525,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[11,3], null)
+},{}]},{},[6,3], null)
 //# sourceMappingURL=/main.72f7f51f.map
