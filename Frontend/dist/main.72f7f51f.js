@@ -99,19 +99,81 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   // Override the current require with this new one
   return newRequire;
 })({3:[function(require,module,exports) {
+var _this = this;
 
-
-// Anropa updateHighscore-funktionen när spelaren når hög poäng
-var updateHighscore = function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(playerName, playerScore) {
-    var url, response;
+// Funktion för att spela spelet
+var playGame = function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(playerChoice) {
+    var choices, computerChoice, winner;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
+            choices = ["sten", "sax", "påse"];
+            computerChoice = choices[Math.floor(Math.random() * choices.length)];
+
+            // Visa spelarens och datorns val
+
+            choicesDisplay.innerText = playerName + ": " + playerChoice + " | Dator: " + computerChoice;
+
+            // Avgör vinnaren
+            winner = determineWinner(playerChoice, computerChoice);
+
+            if (!(winner === "player")) {
+              _context.next = 9;
+              break;
+            }
+
+            playerScore++;
+            // Visa poängen
+            playerScoreDisplay.innerText = playerName + " po\xE4ng: " + playerScore;
+            _context.next = 13;
+            break;
+
+          case 9:
+            if (!(winner === "computer")) {
+              _context.next = 13;
+              break;
+            }
+
+            computerScore++;
+            _context.next = 13;
+            return postPlayerData(playerName, playerScore);
+
+          case 13:
+
+            // Kolla om datorn vann
+            if (computerScore >= 1) {
+              showWinner("Dator");
+            }
+
+          case 14:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+
+  return function playGame(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+// Funktion för att visa vinnaren och starta om spelet efter 3 sekunder
+
+
+// Anropa updateHighscore-funktionen när spelaren når hög poäng
+var postPlayerData = function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(playerName, playerScore) {
+    var url, response;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
             url = 'http://localhost:4000/newscore';
-            _context.prev = 1;
-            _context.next = 4;
+            _context2.prev = 1;
+            _context2.next = 4;
             return fetch(url, {
               method: 'POST',
               headers: {
@@ -121,7 +183,7 @@ var updateHighscore = function () {
             });
 
           case 4:
-            response = _context.sent;
+            response = _context2.sent;
 
 
             if (response.ok) {
@@ -131,89 +193,126 @@ var updateHighscore = function () {
             } else {
               console.error('Kunde inte uppdatera highscore');
             }
-            _context.next = 11;
+            _context2.next = 11;
             break;
 
           case 8:
-            _context.prev = 8;
-            _context.t0 = _context["catch"](1);
+            _context2.prev = 8;
+            _context2.t0 = _context2["catch"](1);
 
-            console.error('Något gick fel:', _context.t0);
+            console.error('Något gick fel:', _context2.t0);
 
           case 11:
           case "end":
-            return _context.stop();
+            return _context2.stop();
         }
       }
-    }, _callee, this, [[1, 8]]);
+    }, _callee2, this, [[1, 8]]);
   }));
 
-  return function updateHighscore(_x, _x2) {
-    return _ref.apply(this, arguments);
+  return function postPlayerData(_x2, _x3) {
+    return _ref2.apply(this, arguments);
   };
 }();
 
 // Ladda och visa highscore-listan när sidan laddas
 
 
-var getHighscore = function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-    var url, response, highscore;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+var updateHighscoreList = function () {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+    var highscores;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
-            url = 'http://localhost:4000/highscore';
-            _context2.prev = 1;
-            _context2.next = 4;
-            return fetch(url);
+            _context3.prev = 0;
+            _context3.next = 3;
+            return getHighscores();
 
-          case 4:
-            response = _context2.sent;
+          case 3:
+            highscores = _context3.sent;
 
-            if (!response.ok) {
-              _context2.next = 12;
-              break;
-            }
 
-            _context2.next = 8;
-            return response.json();
-
-          case 8:
-            highscore = _context2.sent;
-
-            displayHighscore(highscore);
-            _context2.next = 13;
+            // Uppdatera highscore-listan på skärmen
+            displayScoreList(highscores);
+            _context3.next = 10;
             break;
 
-          case 12:
-            console.error('Kunde inte hämta highscore');
+          case 7:
+            _context3.prev = 7;
+            _context3.t0 = _context3["catch"](0);
 
-          case 13:
-            _context2.next = 18;
-            break;
+            console.error('Ett fel uppstod:', _context3.t0);
 
-          case 15:
-            _context2.prev = 15;
-            _context2.t0 = _context2["catch"](1);
-
-            console.error('Något gick fel:', _context2.t0);
-
-          case 18:
+          case 10:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
-    }, _callee2, this, [[1, 15]]);
+    }, _callee3, this, [[0, 7]]);
   }));
 
-  return function getHighscore() {
-    return _ref2.apply(this, arguments);
+  return function updateHighscoreList() {
+    return _ref3.apply(this, arguments);
   };
 }();
 
-// Funktion för att visa highscore-listan
+// Additional code for displaying highscore list
 
+
+var getHighscores = function () {
+  var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+    var response, highscores;
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            _context4.prev = 0;
+            _context4.next = 3;
+            return fetch('http://localhost:4000/highscore');
+
+          case 3:
+            response = _context4.sent;
+
+            if (!response.ok) {
+              _context4.next = 11;
+              break;
+            }
+
+            _context4.next = 7;
+            return response.json();
+
+          case 7:
+            highscores = _context4.sent;
+            return _context4.abrupt("return", highscores);
+
+          case 11:
+            console.error('Fel vid hämtning av highscore-lista');
+            return _context4.abrupt("return", []);
+
+          case 13:
+            _context4.next = 19;
+            break;
+
+          case 15:
+            _context4.prev = 15;
+            _context4.t0 = _context4["catch"](0);
+
+            console.error('Ett fel uppstod:', _context4.t0);
+            return _context4.abrupt("return", []);
+
+          case 19:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4, this, [[0, 15]]);
+  }));
+
+  return function getHighscores() {
+    return _ref4.apply(this, arguments);
+  };
+}();
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
@@ -229,7 +328,8 @@ var scissorsButton = document.getElementById("scissorsBtn");
 var paperButton = document.getElementById("paperBtn");
 var playerScoreDisplay = document.getElementById("playerScore");
 var computerWins = document.getElementById("computerWins");
-var choicesDisplay = document.getElementById("choices"); // Elementet för att visa valen
+var choicesDisplay = document.getElementById("choices");
+var highscoreList = document.getElementById('highscore-list');
 
 // Hantera namninput
 playerNameInput.addEventListener("input", function (event) {
@@ -259,53 +359,9 @@ function determineWinner(playerChoice, computerChoice) {
   } else {
     return "tie";
   }
-}
-
-// Funktion för att spela spelet
-function playGame(playerChoice) {
-  var choices = ["sten", "sax", "påse"];
-  var computerChoice = choices[Math.floor(Math.random() * choices.length)];
-
-  // Visa spelarens och datorns val
-  choicesDisplay.innerText = playerName + ": " + playerChoice + " | Dator: " + computerChoice;
-
-  // Avgör vinnaren
-  var winner = determineWinner(playerChoice, computerChoice);
-  if (winner === "player") {
-    playerScore++;
-    // Visa poängen
-    playerScoreDisplay.innerText = playerName + " po\xE4ng: " + playerScore;
-
-    // Uppdatera highscore om spelaren får ett högre poäng än någon annan i listan
-    if (playerScore > 1 && playerScore > highscoreArray[0].score) {
-      updateHighscore(playerName, playerScore);
-    }
-  } else if (winner === "computer") {
-    computerScore++;
-  }
-
-  // Kolla om datorn vann
-  if (computerScore >= 1) {
-    showWinner("Dator");
-  }
-}
-
-// Efter att du har ökat spelarens poäng
-// Kolla om spelaren har nått poängtröskeln för att uppdatera highscore
-var highscoreUpdateThreshold = 1; // Ändra detta värde för att inkludera spelare med minst ett poäng
-if (playerScore >= highscoreUpdateThreshold) {
-  // Kontrollera att playerName och playerScore har värden innan du anropar updateHighscore
-  if (playerName && playerScore) {
-    updateHighscore(playerName, playerScore);
-  } else {
-    console.error("Ogiltigt namn eller poängvärde");
-  }
-}
-
-// Funktion för att visa vinnaren och starta om spelet efter 3 sekunder
-function showWinner(winnerName) {
+}function showWinner(winnerName) {
   computerWins.innerText = winnerName + " vann \uD83D\uDE22 f\xF6rs\xF6k igen";
-
+  updateScoreboard();
   // Återställ spelet efter 3 sekunder
   setTimeout(function () {
     resetGame();
@@ -319,28 +375,24 @@ function resetGame() {
   computerWins.innerText = "";
   playerScoreDisplay.innerText = playerName + " po\xE4ng: " + playerScore;
   choicesDisplay.innerText = "";
-}function displayHighscore(highscoreArray) {
-  var highscoreListElement = document.getElementById("highscore-list");
+}
 
-  // Rensa tidigare highscore-lista
-  highscoreListElement.innerHTML = "";
-
+function displayScoreList(scoreArray) {
+  highscoreList.innerHTML = ''; // Clear the existing list
+  // Loop through each 'scores' object in 'scoreArray'
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
   var _iteratorError = undefined;
 
   try {
-    for (var _iterator = highscoreArray[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var highscore = _step.value;
-      var name = highscore.name,
-          score = highscore.score;
+    for (var _iterator = scoreArray[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var scores = _step.value;
+      var name = scores.name,
+          score = scores.score; // Destructure 'name' and 'score' from the current 'scores' object
 
-
-      var p = document.createElement("p");
-      p.innerText = name + ": " + score;
-
-      // Lägg till p-elementet i highscore-listan
-      highscoreListElement.appendChild(p);
+      var li = document.createElement("li");
+      li.innerText = name + ": " + score; // Set the text content of the 'li' element to display the player's name and score
+      highscoreList.appendChild(li);
     }
   } catch (err) {
     _didIteratorError = true;
@@ -358,8 +410,29 @@ function resetGame() {
   }
 }
 
-getHighscore();
-},{}],13:[function(require,module,exports) {
+// Add an event listener to execute the following code when the page finishes loading
+window.addEventListener('load', _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+  var highscores;
+  return regeneratorRuntime.wrap(function _callee5$(_context5) {
+    while (1) {
+      switch (_context5.prev = _context5.next) {
+        case 0:
+          _context5.next = 2;
+          return getHighscores();
+
+        case 2:
+          highscores = _context5.sent;
+
+          displayScoreList(highscores);
+
+        case 4:
+        case "end":
+          return _context5.stop();
+      }
+    }
+  }, _callee5, _this);
+})));
+},{}],7:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -388,7 +461,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '55214' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '64150' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -529,5 +602,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[13,3], null)
+},{}]},{},[7,3], null)
 //# sourceMappingURL=/main.72f7f51f.map
