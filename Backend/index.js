@@ -1,6 +1,6 @@
 const express = require("express");
 const fs = require("fs");
-const cors = require("cors");
+
 
 const app = express();
 const port = 4000;
@@ -12,42 +12,46 @@ app.use(function (req, res, next) {
     next();
 });
 
+// Läs highscores från JSON-fil
 function getHighscores() {
-    const rawData = fs.readFileSync(path.join(__dirname, 'data', 'highscore.json'));
-    const highscores = JSON.parse(rawData);
-    highscores.sort((a, b) => b.score - a.score);
-    return highscores;
+  try {
+      const rawData = fs.readFileSync("./data/highscore.json");
+      const highscores = JSON.parse(rawData);
+      highscores.sort((a, b) => b.score - a.score);
+      return highscores;
+  } catch (error) {
+      console.error("Kunde inte ladda highscore-listan från filen:", error);
+      return [];
+  }
 }
 
+// Spara highscores till JSON-fil
 function saveHighscores(highscores) {
-    const jsonData = JSON.stringify(highscores);
-    fs.writeFileSync(path.join(__dirname, 'data', 'highscore.json'), jsonData);
+  try {
+      fs.writeFileSync("./data/highscore.json", JSON.stringify(highscores));
+  } catch (error) {
+      console.error("Gick inte att spara", error);
+  }
 }
 
-
+// Hämta highscore-listan
 app.get('/highscore', (req, res) => {
-    const highscores = getHighscores();
-    res.send(highscores);
+  const highscores = getHighscores();
+  res.send(highscores);
 });
 
 
-app.post('/highscore', (req, res) => {
-    const { name, score } = req.body;
-    const highscores = getHighscores();
-
-   
-    highscores.push({ name, score });
-
-    highscores.sort((a, b) => b.score - a.score);
-
-    highscores.splice(5);
-
-    saveHighscores(highscores);
-
-    res.json({ highscores });
+// Lägg till nytt highscore-objekt
+app.post('/newscore', (req, res) => {
+  const { name, score } = req.body;
+  const highscores = getHighscores();
+  highscores.push({ name, score });
+  highscores.sort((a, b) => b.score - a.score);
+  highscores.splice(5);
+  saveHighscores(highscores);
+  res.json({ highscores });
 });
-
 
 app.listen(port, () => {
-    console.log(`Running server ${port}`);
+    console.log(`Running server on ${port}`);
 });

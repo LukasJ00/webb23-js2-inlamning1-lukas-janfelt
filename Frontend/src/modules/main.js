@@ -67,9 +67,8 @@ async function playGame(playerChoice) {
     playerScoreDisplay.innerText = `${playerName} poäng: ${playerScore}`;
   } else if (winner === "computer") {
     computerScore++;
-    await postPlayerData(playerName, playerScore);
+    
   }
-
   // Kolla om datorn vann
   if (computerScore >= 1) {
     showWinner("Dator");
@@ -78,13 +77,14 @@ async function playGame(playerChoice) {
 }
 
 // Funktion för att visa vinnaren och starta om spelet efter 3 sekunder
-function showWinner(winnerName) {
+async function showWinner(winnerName) {
   computerWins.innerText = `${winnerName} vann 😢 försök igen`;
-  updateScoreboard();
-  // Återställ spelet efter 3 sekunder
   setTimeout(() => {
+    postPlayerData(playerName, playerScore);
     resetGame();
-  }, 3000); // 3000 millisekunder = 3 sekunder
+    computerWins.innerText = "";
+  }, 3000); 
+ 
 }
 
 // Funktion för att återställa spelet
@@ -96,7 +96,7 @@ function resetGame() {
   choicesDisplay.innerText = "";
 }
 
-// Anropa updateHighscore-funktionen när spelaren når hög poäng
+/// Anropa updateHighscore-funktionen när spelet är klart
 async function postPlayerData(playerName, playerScore) {
   const url = 'http://localhost:4000/newscore';
 
@@ -111,8 +111,6 @@ async function postPlayerData(playerName, playerScore) {
 
     if (response.ok) {
       console.log('Highscore uppdaterad');
-      // Observera att vi inte använder highscoreArray här
-      // eftersom vi inte har den uppdaterade listan när vi anropar denna funktion
     } else {
       console.error('Kunde inte uppdatera highscore');
     }
@@ -125,10 +123,7 @@ async function postPlayerData(playerName, playerScore) {
 async function updateHighscoreList() {
  
   try {
-    // Hämta den uppdaterade highscore-listan från servern
     const highscores = await getHighscores();
-
-    // Uppdatera highscore-listan på skärmen
     displayScoreList(highscores);
 } catch (error) {
     console.error('Ett fel uppstod:', error);
@@ -152,20 +147,19 @@ async function getHighscores() {
   }
 }
 
-function displayScoreList(scoreArray) {
-  highscoreList.innerHTML = ''; // Clear the existing list
-  // Loop through each 'scores' object in 'scoreArray'
-  for (const scores of scoreArray) {
-      const { name, score } = scores; // Destructure 'name' and 'score' from the current 'scores' object
-      const li = document.createElement("li");
-      li.innerText = `${name}: ${score}`; // Set the text content of the 'li' element to display the player's name and score
-      highscoreList.appendChild(li);
-  }
-}
-
-// Add an event listener to execute the following code when the page finishes loading
+// Hämta highscore-listan
 window.addEventListener('load', async () => {
-  // Call the 'getHighscores' function asynchronously to retrieve highscore data
   const highscores = await getHighscores();
   displayScoreList(highscores);
 });
+
+// Visa highscore-listan 
+function displayScoreList(scoreArray) {
+  highscoreList.innerHTML = ''; 
+  for (const scores of scoreArray) {
+      const { name, score } = scores; 
+      const li = document.createElement("li");
+      li.innerText = `${name}: ${score}`; 
+      highscoreList.appendChild(li);
+  }
+}
