@@ -111,6 +111,7 @@ async function postPlayerData(playerName, playerScore) {
 
     if (response.ok) {
       console.log('Highscore uppdaterad');
+      await updateHighscoreList(); // Uppdatera highscore-listan efter att poängen har sparats
     } else {
       console.error('Kunde inte uppdatera highscore');
     }
